@@ -48,7 +48,7 @@ class kMeans(object):
 
     # 绘制散点图和聚类中心
     def show(self,data,k,everyDict,center):
-        mpl.rcParams['font.sans-serif'] = ['SimHei'] #指定默认字体
+        mpl.rcParams['font.sans-serif'] = ['SimHei']
         mpl.rcParams['axes.unicode_minus'] = False
         fig = plt.figure(figsize = (8,6))
         ax = fig.add_subplot(111)
@@ -65,23 +65,25 @@ class kMeans(object):
         plt.grid(True)
         plt.show()
 
-    # 主程序入口
     # filename为数据集文件地址；k为聚类数目；itermax为最大迭代次数
     def run(self,filename,k,itermax):
         data = np.array(self.loadDataSet(filename))
         num, dim = np.shape(data)[0], np.shape(data)[1]
         center = self.createCenter(k,data)
-        everyDict = {}      # 用字典来存储每个数据点所属类别，类中心，数据点，距离
+        # 用字典存储每个数据点所属类别，类中心，数据点，距离
+        everyDict = {}      
         for p in xrange(num):
             everyDict[p] = [None,None,data[p],None]
         changeFlag = True
-        classDict = {}  # 用字典来存储每一类所包含的数据点
-        iter = 0    # 统计迭代次数
+        # 用字典来存储每一类所包含的数据点
+        classDict = {}  
+        iter = 0
         while changeFlag:
             changeFlag = False
-            everyDictago = copy.deepcopy(everyDict) # 存储上一次迭代的结果，和这一次迭代的结果进行比较，判断距离是否有变化
+            # 存储上一次迭代的结果，和这一次迭代的结果进行比较，判断距离是否有变化
+            everyDictago = copy.deepcopy(everyDict) 
             for kk in xrange(k):
-                classDict[kk] = []  # 存储每一类所包含的数据点
+                classDict[kk] = []
             for i in xrange(num):
                 index, distmin = 0, float('inf')
                 for j in xrange(k):
@@ -90,13 +92,15 @@ class kMeans(object):
                         index = j; distmin = distIJ
                 everyDict[i][0], everyDict[i][1], everyDict[i][-1] = index, center[index], distmin
                 classDict[everyDict[i][0]].append(everyDict[i][2])
-                if everyDict[i][-1] != everyDictago[i][-1]: # 如果和上一次相比距离有变化，则继续迭代
+                # 如果和上一次相比距离有变化，则继续迭代
+                if everyDict[i][-1] != everyDictago[i][-1]: 
                     changeFlag = True
             for item, value in classDict.iteritems():
-                arrindex = np.vstack((classDict[item]))   # 将每一类包含的的数据点整合为一个数组，便于求平均值
+                 # 将每一类包含的的数据点整合为一个数组，便于求平均值
+                arrindex = np.vstack((classDict[item]))  
                 center[item] = np.mean(arrindex, axis=0)
             iter += 1
-            if iter > itermax:  # 如果超过最大迭代次数则break
+            if iter > itermax:
                 break
             print("iter " + str(iter) + ":  " + str(center))
         print("The final cluster center: " + str(center))
